@@ -1,0 +1,135 @@
+body {
+  background-color: #081028 !important;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 400px;
+  background-color: #0b1739 !important;
+  color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0px 8px 28px 0px #0105114d;
+}
+
+.login-card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.social-login {
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.google-btn {
+  background: linear-gradient(
+    128.49deg,
+    #cb3cff 19.86%,
+    #7f25fb 68.34%
+  ) !important;
+  color: white;
+}
+
+.google-btn:hover {
+  background-color: #7e22ce;
+}
+
+.apple-btn {
+  background-color: #0a1330 !important;
+  color: #ffffff !important;
+}
+
+.apple-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.divider-text {
+  position: relative;
+  z-index: 1;
+  color: #9ca3af;
+}
+
+/* .divider-text::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -70px;
+  right: -80px;
+  border-top: 1px solid #4b5563;
+  z-index: -1;
+}
+
+.divider-text::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -50px;
+  right: -50px;
+  border-top: 1px solid #4b5563;
+  z-index: -1;
+} */
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #1a1b31;
+  border: 1px solid #374151;
+  border-radius: 0.25rem;
+  color: white;
+}
+
+.input-group-append .btn {
+  background-color: #1a1b31;
+  border-color: #374151;
+  border-radius: 0.25rem;
+  color: white;
+}
+
+.forgot-password {
+  color: #9333ea;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(
+    128.49deg,
+    #cb3cff 19.86%,
+    #7f25fb 68.34%
+  ) !important;
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: #7e22ce;
+}
+
+.signup-link {
+  color: #9333ea;
+  text-decoration: none;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}

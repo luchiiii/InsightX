@@ -1,0 +1,33 @@
+import { Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
+import ProtectedRoutes from "./ProtectedRoutes";
+import AuthPage from "../pages/AuthPage";
+import Login from "../components/authComponents/Login";
+import Signup from "../components/authComponents/Signup";
+import VerifyAccount from "../components/authComponents/VerifyAccount";
+import DashboardPage from "../pages/DashboardPage";
+
+const AppRoutes = () => {
+  const {user} = useSelector((state) => state.userState);
+  
+  return (
+    <Routes>
+      <Route path="/auth" element={<AuthPage />}>
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup />} />
+        <Route path="verify" element={<VerifyAccount />} />
+      </Route>
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoutes user={user}>
+            <DashboardPage />
+          </ProtectedRoutes>
+        }
+      />
+    </Routes>
+  );
+};
+
+export default AppRoutes;
