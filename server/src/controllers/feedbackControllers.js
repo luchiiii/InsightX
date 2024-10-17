@@ -1,39 +1,54 @@
-const Feedback = require("../model/feedbackModel");
+// controllers/feedbackController.js
 
-//create new feedback
+const Feedback = require("../model/feedbackModel");
+const { calculateNPSForQuestions } = require("../helpers/npsCalculator");
 
 const createNewFeedback = async (req, res) => {
-    const { userId: organizationId } = req.user;
-
+  const { userId: organizationId } = req.user;
   const { questions } = req.body;
 
-  
   try {
-    // Create new feedback document
     const newFeedback = new Feedback({
-      organization:organizationId ,
-      feedback: questions, // Capturing the question and score in an array
+      organization: organizationId,
+      feedback: questions,
     });
 
-    //save the feedback in the database
     await newFeedback.save();
 
-    //send success response
-    res
-      .status(200)
-      .json({ message: "Feedback created successfully", newFeedback });
+    res.status(200).json({
+      success: true,
+      data: newFeedback,
+      message: "Feedback created successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-//get all feedback
 const getAllFeedback = async (req, res) => {
   const { userId: organizationId } = req.user;
   try {
+    const feedbacks = await Feedback.find({ organization: organizationId });
+
+    if (!feedbacks || feedbacks.length === 0) {
+      return res.status(404).json({
+        error: "No feedbacks found for this organization",
+      });
+    }
+
+    const npsAnalytics = calculateNPSForQuestions(feedbacks);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        feedbacks,
+        npsAnalytics,
+      },
+      message: "Feedbacks retrieved successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-module.exports = { createNewFeedback };
+module.exports = { createNewFeedback, getAllFeedback };

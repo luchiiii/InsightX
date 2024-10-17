@@ -49,7 +49,6 @@ const createNewUser = async (req, res) => {
       .status(201)
       .json({ message: "Account created Successfully", newUser });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "Server Error" });
   }
 };

@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl = process.env.REACT_APP_API_BASE_URL;
+let baseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const feedbackApi = createApi({
   reducerPath: "feedbackApi",
@@ -14,11 +14,23 @@ export const feedbackApi = createApi({
         body: feedbackData,
         credentials: "include",
         headers: {
-          Authorization: `Bearer ${feedbackData.token}`,
-        }
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzBlNmM1NjkxODQ1MTZkMGFkZDljMWIiLCJpYXQiOjE3MjkwODI4MjksImV4cCI6MTczMTY3NDgyOX0.Yh7ORui4Gd3tffNpA10L0bWvqIZr7dFrEmfZWQ_kIEs`,
+        },
+      }),
+    }),
+
+    getAllFeedback: builder.mutation({
+      query: (token) => ({
+        url: "/feedback/all",
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}}`,
+        },
       }),
     }),
   }),
 });
 
-export const { useCreateNewFeedbackMutation } = feedbackApi;
+export const { useCreateNewFeedbackMutation, useGetAllFeedbackMutation } =
+  feedbackApi;

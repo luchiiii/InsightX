@@ -6,10 +6,11 @@ import Login from "../components/authComponents/Login";
 import Signup from "../components/authComponents/Signup";
 import VerifyAccount from "../components/authComponents/VerifyAccount";
 import DashboardPage from "../pages/DashboardPage";
+import ResultPage from "../pages/ResultPage";
 
 const AppRoutes = () => {
-  const {user} = useSelector((state) => state.userState);
-  
+  const { user } = useSelector((state) => state.userState);
+
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />}>
@@ -26,6 +27,8 @@ const AppRoutes = () => {
           </ProtectedRoutes>
         }
       />
+
+      <Route path="/result" element={<ResultPage />} />
     </Routes>
   );
 };

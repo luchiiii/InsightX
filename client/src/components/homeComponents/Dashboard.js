@@ -1,20 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import {
+  useCreateNewFeedbackMutation,
+  useGetAllFeedbackMutation,
+} from "../../lib/feedbackApi";
 import { useGenerateApiTokenMutation } from "../../lib/userApis";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDashboard,
   faKey,
   faMessage,
+  faChartBar,
+  faBook,
 } from "@fortawesome/free-solid-svg-icons";
+
+import { useNavigate } from "react-router-dom";
 import "../../Styles/Dashboard.css";
 
 const Dashboard = () => {
-  const [scores, setScores] = useState([0, 0, 0]);
+  const [scores, setScores] = useState([{ question: "", score: 0 }]);
   const [response, setResponse] = useState("");
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.userState);
   const [generateApiToken] = useGenerateApiTokenMutation();
+  const [createNewFeedback, {data, error}] = useCreateNewFeedbackMutation();
+  const [getAllFeedback] = useGetAllFeedbackMutation();
 
   const questions = [
     "How satisfied are you with our service?",
@@ -23,18 +34,30 @@ const Dashboard = () => {
   ];
 
   const handleScoreChange = (questionIndex, score) => {
-    const newScores = [...scores];
-    newScores[questionIndex] = score;
-    setScores(newScores);
+    if (scores[0].question === "") {
+      return setScores([{ question: questions[questionIndex], score }]);
+    }
+
+    setScores((prevScores) => [
+      ...prevScores,
+      { question: questions[questionIndex], score },
+    ]);
   };
 
-  const generateResponse = () => {
-    setResponse(
-      `Based on your feedback (scores: ${scores.join(
-        ", "
-      )}), we appreciate your input and will use it to improve our services.`
+  
+  const handleGenerateResponse = async() => {
+   await createNewFeedback(scores)
+  };
+
+  const openDocumentation = () => {
+    window.open(
+      "https://documenter.getpostman.com/view/36998674/2sAXxV5pbd",
+      "_blank"
     );
   };
+
+  console.log(data)
+  console.log(error)
 
   return (
     <div className="dashboard-container">
@@ -57,6 +80,18 @@ const Dashboard = () => {
             <a href="#" className="nav-link">
               <FontAwesomeIcon icon={faMessage} className="me-2" />
               Test API
+            </a>
+          </li>
+          <li className="nav-item">
+            <a onClick className="nav-link">
+              <FontAwesomeIcon icon={faChartBar} className="me-2" />
+              See Results
+            </a>
+          </li>
+          <li className="nav-item">
+            <a onClick={openDocumentation} className="nav-link">
+              <FontAwesomeIcon icon={faBook} className="me-2" />
+              API Preferences
             </a>
           </li>
         </ul>
@@ -96,7 +131,7 @@ const Dashboard = () => {
                       key={score}
                       onClick={() => handleScoreChange(index, score)}
                       className={`score-button ${
-                        scores[index] === score ? "active" : ""
+                        scores[index]?.score === score ? "active" : ""
                       }`}
                     >
                       {score}
@@ -106,8 +141,11 @@ const Dashboard = () => {
               </div>
             ))}
 
-            <button className="btn btn-primary" onClick={generateResponse}>
-              Generate Response
+            <button
+              className="btn btn-primary"
+              onClick={handleGenerateResponse}
+            >
+              Submit Feedback
             </button>
 
             {response && (
