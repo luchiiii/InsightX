@@ -1,78 +1,57 @@
-// import React, { useEffect, useState } from 'react';
-// import { useGetAllFeedbackMutation } from '../../lib/feedbackApi';
-// import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   ResponsiveContainer,
-// } from 'recharts';
+import { useEffect, useState } from "react";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { useGetAllFeedbackMutation } from "../../lib/feedbackApi";
+import { useSelector } from "react-redux";
 
-// const Results = () => {
-//   const [feedbackData, setFeedbackData] = useState([]);
-//   const [getAllFeedback] = useGetAllFeedbackMutation();
+//register required components
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await getAllFeedback();
-//         const processedData = processDataForChart(response.data);
-//         setFeedbackData(processedData);
-//       } catch (error) {
-//         console.error('Error fetching feedback:', error);
-//       }
-//     };
+const Results = () => {
+  const { user } = useSelector((state) => state.userState);
+  const [getAllFeedback, { data, error, isLoading }] =
+    useGetAllFeedbackMutation();
+  const [chartData, setChartData] = useState({});
 
-//     fetchData();
-//   }, []);
+  useEffect(() => {
+    getAllFeedback();
+  }, []);
 
-//   const processDataForChart = (data) => {
-//     return data.map((feedback, index) => ({
-//       name: `Feedback ${index + 1}`,
-//       satisfaction: feedback.scores[0],
-//       recommendation: feedback.scores[1],
-//       easeOfUse: feedback.scores[2],
-//     }));
-//   };
 
-//   return (
-//     <div className="results-container p-4">
-//       <h1>Feedback Results</h1>
-      
-//       <div className="chart-container" style={{ height: '400px' }}>
-//         <ResponsiveContainer width="100%" height="100%">
-//           <LineChart data={feedbackData}>
-//             <CartesianGrid strokeDasharray="3 3" />
-//             <XAxis dataKey="name" />
-//             <YAxis domain={[0, 10]} />
-//             <Tooltip />
-//             <Legend />
-//             <Line 
-//               type="monotone" 
-//               dataKey="satisfaction" 
-//               stroke="#8884d8" 
-//               name="Satisfaction"
-//             />
-//             <Line 
-//               type="monotone" 
-//               dataKey="recommendation" 
-//               stroke="#82ca9d" 
-//               name="Recommendation"
-//             />
-//             <Line 
-//               type="monotone" 
-//               dataKey="easeOfUse" 
-//               stroke="#ffc658" 
-//               name="Ease of Use"
-//             />
-//           </LineChart>
-//         </ResponsiveContainer>
-//       </div>
-//     </div>
-//   );
-// };
 
-// export default Results;
+  console.log(data);
+
+  const dummyData = {
+    labels: ["Promoters", "Passive", "Detractors"],
+    datasets: [
+      {
+        label: "# of Votes",
+        data: [12, 19, 3],
+        backgroundColor: ["green", "orange", "red"],
+        borderColor: ["green", "orange", "red"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      tooltip: { enabled: true },
+    },
+  };
+
+  return (
+    <div>
+      <h1>Results</h1>
+      <p>Here are your results.</p>
+
+      <Doughnut data={dummyData} options={options} />
+    </div>
+  );
+};
+
+export default Results;

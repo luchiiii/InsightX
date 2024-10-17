@@ -24,7 +24,7 @@ const Dashboard = () => {
 
   const { user } = useSelector((state) => state.userState);
   const [generateApiToken] = useGenerateApiTokenMutation();
-  const [createNewFeedback, {data, error}] = useCreateNewFeedbackMutation();
+  const [createNewFeedback, { data, error }] = useCreateNewFeedbackMutation();
   const [getAllFeedback] = useGetAllFeedbackMutation();
 
   const questions = [
@@ -44,9 +44,17 @@ const Dashboard = () => {
     ]);
   };
 
-  
-  const handleGenerateResponse = async() => {
-   await createNewFeedback(scores)
+  const handleGenerateResponse = async () => {
+    try {
+      await createNewFeedback({ questions: scores });
+      setResponse("Feedback submitted successfully!"); // Set success message
+    } catch (error) {
+      setResponse("Error submitting feedback. Please try again."); // Set error message
+    }
+  };
+
+  const navigateToResults = () => {
+    navigate("/result");
   };
 
   const openDocumentation = () => {
@@ -55,9 +63,6 @@ const Dashboard = () => {
       "_blank"
     );
   };
-
-  console.log(data)
-  console.log(error)
 
   return (
     <div className="dashboard-container">
@@ -83,7 +88,7 @@ const Dashboard = () => {
             </a>
           </li>
           <li className="nav-item">
-            <a onClick className="nav-link">
+            <a onClick={navigateToResults} className="nav-link">
               <FontAwesomeIcon icon={faChartBar} className="me-2" />
               See Results
             </a>

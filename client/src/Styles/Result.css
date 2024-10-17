@@ -1,0 +1,121 @@
+/* Results.css */
+.results-container {
+    padding: 2rem 0;
+  }
+  
+  .results-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+  
+  .overall-stats {
+    background-color: #f8f9fa;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .overall-stats .card-header {
+    background-color: #fff;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  .overall-stats .card-title {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #444;
+  }
+  
+  .stat-item {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+  }
+  
+  .stat-value {
+    font-weight: bold;
+    margin-left: 0.5rem;
+    color: #2c3e50;
+  }
+  
+  .question-card {
+    margin-bottom: 2rem;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .question-card .card-header {
+    background-color: #fff;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  .question-card .card-title {
+    font-size: 1.3rem;
+    margin: 0;
+    color: #444;
+  }
+  
+  .chart-container {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+  
+  .stats-container {
+    padding: 1rem;
+  }
+  
+  .stats-box {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .nps-score {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+  
+  .stats-details {
+    margin-bottom: 1rem;
+  }
+  
+  .stats-details p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+  
+  .percentages p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+  
+  .promoters {
+    color: #28a745;
+  }
+  
+  .passive {
+    color: #ffc107;
+  }
+  
+  .detractors {
+    color: #dc3545;
+  }
+  
+  @media (max-width: 768px) {
+    .results-title {
+      font-size: 2rem;
+    }
+  
+    .chart-container {
+      min-height: 250px;
+    }
+  
+    .stats-box {
+      margin-top: 1rem;
+    }
+  }

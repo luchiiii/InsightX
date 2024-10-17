@@ -25,7 +25,7 @@ export const feedbackApi = createApi({
         method: "GET",
         credentials: "include",
         headers: {
-          Authorization: `Bearer ${token}}`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzBlNmM1NjkxODQ1MTZkMGFkZDljMWIiLCJpYXQiOjE3MjkwODI4MjksImV4cCI6MTczMTY3NDgyOX0.Yh7ORui4Gd3tffNpA10L0bWvqIZr7dFrEmfZWQ_kIEs`,
         },
       }),
     }),
