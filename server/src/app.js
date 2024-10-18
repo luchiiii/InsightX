@@ -12,7 +12,7 @@ app.use(express.json());
 // Use CORS to allow requests from your frontend
 app.use(
   cors({
-    origin: "http://localhost:3000", // Allow only your front-end to access
+    origin: ["http://localhost:3000", "https://insightx.vercel.app"], // Allow only your front-end to access
     methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods if necessary
     credentials: true, // If you're sending cookies or authorization headers
   })
