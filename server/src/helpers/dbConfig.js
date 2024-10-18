@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
+const { DB_URI } = require("../config/index");
 
 //connect to mongodb database
 const connectDb = async () => {
   await mongoose
-    .connect("mongodb://localhost:27017/InsightX")
+    .connect(DB_URI)
     .then(() => console.log("database connected"))
     .catch((error) => console.log(error));
 };
