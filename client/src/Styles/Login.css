@@ -65,41 +65,51 @@ body {
   color: #9ca3af;
 }
 
-/* .divider-text::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -70px;
-  right: -80px;
-  border-top: 1px solid #4b5563;
-  z-index: -1;
+/* Password input group styling */
+.input-group {
+  position: relative;
+  display: flex;
+  width: 100%;
 }
 
-.divider-text::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -50px;
-  right: -50px;
-  border-top: 1px solid #4b5563;
-  z-index: -1;
-} */
+.input-group .form-control {
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
 
-.form-control {
-  width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  background-color: #1a1b31;
-  border: 1px solid #374151;
-  border-radius: 0.25rem;
-  color: white;
+.input-group-append {
+  display: flex;
 }
 
 .input-group-append .btn {
+  padding: 0.75rem 1rem;
+  border: 1px solid #374151;
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
   background-color: #1a1b31;
-  border-color: #374151;
-  border-radius: 0.25rem;
-  color: white;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remove margin-bottom from password input since it's handled by input-group */
+.input-group .form-control {
+  margin-bottom: 0;
+}
+
+/* Add margin to the whole input group instead */
+.input-group {
+  margin-bottom: 1rem;
+}
+
+/* Hover state for the eye button */
+.input-group-append .btn:hover {
+  background-color: #242544;
 }
 
 .forgot-password {

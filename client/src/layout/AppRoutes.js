@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProtectedRoutes from "./ProtectedRoutes";
 import AuthPage from "../pages/AuthPage";
@@ -13,6 +13,8 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      {/* Redirect from root ("/") to login page by default */}
+      <Route path="/" element={<Navigate to="/auth/login" />} />
       <Route path="/auth" element={<AuthPage />}>
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />

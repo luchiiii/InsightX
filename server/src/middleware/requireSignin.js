@@ -5,7 +5,6 @@ const { JWT_SECRET } = require("../config/index");
 
 const requireSignin = async (req, res, next) => {
   try {
-    console.log(req.cookies);
     const { accessToken } = req.cookies;
 
     if (!accessToken) {

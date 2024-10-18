@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import {
-  useCreateNewFeedbackMutation,
-  useGetAllFeedbackMutation,
-} from "../../lib/feedbackApi";
+import { useCreateNewFeedbackMutation } from "../../lib/feedbackApi";
 import { useGenerateApiTokenMutation } from "../../lib/userApis";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,13 +16,14 @@ import "../../Styles/Dashboard.css";
 
 const Dashboard = () => {
   const [scores, setScores] = useState([{ question: "", score: 0 }]);
-  const [response, setResponse] = useState("");
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.userState);
   const [generateApiToken] = useGenerateApiTokenMutation();
-  const [createNewFeedback, { data, error }] = useCreateNewFeedbackMutation();
-  const [getAllFeedback] = useGetAllFeedbackMutation();
+  const [
+    createNewFeedback,
+    { data, error, isSuccess, isError, isLoading, status },
+  ] = useCreateNewFeedbackMutation();
 
   const questions = [
     "How satisfied are you with our service?",
@@ -45,12 +43,8 @@ const Dashboard = () => {
   };
 
   const handleGenerateResponse = async () => {
-    try {
-      await createNewFeedback({ questions: scores });
-      setResponse("Feedback submitted successfully!"); // Set success message
-    } catch (error) {
-      setResponse("Error submitting feedback. Please try again."); // Set error message
-    }
+    if (scores.length < 3) return;
+    await createNewFeedback({ questions: scores, apiKey: user?.apiToken });
   };
 
   const navigateToResults = () => {
@@ -63,6 +57,12 @@ const Dashboard = () => {
       "_blank"
     );
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setScores([{ question: "", score: 0 }]);
+    }
+  }, [isSuccess]);
 
   return (
     <div className="dashboard-container">
@@ -96,7 +96,7 @@ const Dashboard = () => {
           <li className="nav-item">
             <a onClick={openDocumentation} className="nav-link">
               <FontAwesomeIcon icon={faBook} className="me-2" />
-              API Preferences
+              API Reference
             </a>
           </li>
         </ul>
@@ -150,15 +150,17 @@ const Dashboard = () => {
               className="btn btn-primary"
               onClick={handleGenerateResponse}
             >
-              Submit Feedback
+              {!isLoading ? "Submit Feedback" : "Please wait..."}
             </button>
 
-            {response && (
-              <div className="response-area">
-                <h3>Response:</h3>
-                <p>{response}</p>
-              </div>
-            )}
+            <div className="response-area">
+              {status === "fulfilled" && <h3>Response:</h3>}
+              {status === "rejected" && <h3>Response:</h3>}
+              {isSuccess && (
+                <p>{data.message || "Feedback received successfully"}</p>
+              )}
+              {isError && error?.data?.error && <p>{error.data.error}</p>}
+            </div>
           </div>
         </div>
       </main>

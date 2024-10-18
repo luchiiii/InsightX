@@ -1,10 +1,16 @@
 import AppRoutes from "./AppRoutes";
+import NavBar from "./NavBar";
 
 const Layout = () => {
   return (
-    <main>
-      <AppRoutes />
-    </main>
+    <>
+      <header>
+        <NavBar />
+      </header>
+      <main>
+        <AppRoutes />
+      </main>
+    </>
   );
 };
 

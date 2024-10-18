@@ -1,6 +1,17 @@
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
+  const { user } = useSelector((state) => state.userState);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user]);
   return (
     <section className="container">
       <div className="row">
