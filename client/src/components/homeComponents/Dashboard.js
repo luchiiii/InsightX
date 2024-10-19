@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useCreateNewFeedbackMutation } from "../../lib/feedbackApi";
+import { useLogoutUserMutation } from "../../lib/authApis";
 import { useGenerateApiTokenMutation } from "../../lib/userApis";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,19 +16,20 @@ import { useNavigate } from "react-router-dom";
 import "../../Styles/Dashboard.css";
 
 const Dashboard = () => {
-  const [scores, setScores] = useState([{ question: "", score: 0 }]);
+  const [scores, setScores] = useState([{ question: "", score: 0, kpi: "" }]);
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.userState);
   const [generateApiToken] = useGenerateApiTokenMutation();
+  const [logoutUser] = useLogoutUserMutation();
   const [
     createNewFeedback,
     { data, error, isSuccess, isError, isLoading, status },
   ] = useCreateNewFeedbackMutation();
 
   const questions = [
-    "How satisfied are you with our service?",
-    "How likely are you to recommend us?",
+    "How satisfied are you with the delivery",
+    "How likely are you to recommend the rider",
     "How would you rate the ease of use of our product?",
   ];
 
@@ -47,6 +49,12 @@ const Dashboard = () => {
     await createNewFeedback({ questions: scores, apiKey: user?.apiToken });
   };
 
+  const onLogoutHandler = async (event) => {
+    event.preventDefault();
+
+    return logoutUser();
+  };
+
   const navigateToResults = () => {
     navigate("/result");
   };
@@ -63,6 +71,8 @@ const Dashboard = () => {
       setScores([{ question: "", score: 0 }]);
     }
   }, [isSuccess]);
+
+  console.log(scores);
 
   return (
     <div className="dashboard-container">
@@ -99,6 +109,14 @@ const Dashboard = () => {
               API Reference
             </a>
           </li>
+          {user && (
+            <li className="nav-item">
+              <a onClick={onLogoutHandler} className="nav-link">
+                <FontAwesomeIcon icon={faBook} className="me-2" />
+                LogOut
+              </a>
+            </li>
+          )}
         </ul>
       </nav>
 
