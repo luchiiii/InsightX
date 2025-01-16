@@ -10,6 +10,7 @@ import {
   faMessage,
   faChartBar,
   faBook,
+  faSignOutAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useNavigate } from "react-router-dom";
@@ -112,7 +113,7 @@ const Dashboard = () => {
           {user && (
             <li className="nav-item">
               <a onClick={onLogoutHandler} className="nav-link">
-                <FontAwesomeIcon icon={faBook} className="me-2" />
+                <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
                 LogOut
               </a>
             </li>

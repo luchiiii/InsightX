@@ -37,33 +37,6 @@ body {
   transition: background-color 0.3s;
 }
 
-.google-btn {
-  background: linear-gradient(
-    128.49deg,
-    #cb3cff 19.86%,
-    #7f25fb 68.34%
-  ) !important;
-  color: white;
-}
-
-.google-btn:hover {
-  background-color: #7e22ce;
-}
-
-.apple-btn {
-  background-color: #0a1330 !important;
-  color: #ffffff !important;
-}
-
-.apple-btn:hover {
-  background-color: #f3f4f6;
-}
-
-.divider-text {
-  position: relative;
-  z-index: 1;
-  color: #9ca3af;
-}
 
 /* Password input group styling */
 .input-group {
@@ -97,12 +70,12 @@ body {
   justify-content: center;
 }
 
-/* Remove margin-bottom from password input since it's handled by input-group */
+
 .input-group .form-control {
   margin-bottom: 0;
 }
 
-/* Add margin to the whole input group instead */
+
 .input-group {
   margin-bottom: 1rem;
 }

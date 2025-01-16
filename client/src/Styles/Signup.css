@@ -41,24 +41,6 @@ body {
   width: 48%;
 }
 
-.google-btn {
-  background-color: #9333ea;
-  color: white;
-}
-
-.google-btn:hover {
-  background-color: #7e22ce;
-}
-
-.apple-btn {
-  background-color: #1f2937;
-  color: white;
-}
-
-.apple-btn:hover {
-  background-color: #374151;
-}
-
 .form-control {
   width: 100%;
   padding: 0.75rem;
@@ -118,7 +100,7 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Remove default outline on focus for better aesthetics */
+/* Focus state */
 .form-control:focus,
 .btn:focus {
   outline: none;

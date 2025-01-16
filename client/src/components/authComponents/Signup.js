@@ -39,15 +39,6 @@ const Signup = () => {
     <div className="container signup-container mt-5">
       <div className="signup-card">
         <h3 className="text-center">Sign Up</h3>
-        <div className="social-signup d-flex justify-content-between mb-4">
-          <button className="btn google-btn">
-            <FontAwesomeIcon icon={faGoogle} /> Sign up with Google
-          </button>
-          <button className="btn apple-btn">
-            <FontAwesomeIcon icon={faApple} /> Sign up with Apple
-          </button>
-        </div>
-        <div className="text-center mb-4">or Sign up with</div>
         {isError && (
           <Error errorMessage={error?.data?.error || "something went wrong"} />
         )}

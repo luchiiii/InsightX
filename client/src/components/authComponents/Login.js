@@ -50,15 +50,8 @@ const Login = () => {
     <div className="container login-container mt-5">
       <div className="login-card">
         <h3 className="text-center">Login</h3>
-        <div className="social-login d-flex justify-content-between mb-4">
-          <button className="btn google-btn">
-            <FontAwesomeIcon icon={faGoogle} /> Login with Google
-          </button>
-          <button className="btn apple-btn">
-            <FontAwesomeIcon icon={faApple} /> Login with Apple
-          </button>
-        </div>
-        <div className="text-center mb-4">or Login with</div>
+        
+       
         {isError && (
           <Error errorMessage={error?.data?.error || "something went wrong"} />
         )}

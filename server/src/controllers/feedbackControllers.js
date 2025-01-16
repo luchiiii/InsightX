@@ -27,7 +27,7 @@ const createNewFeedback = async (req, res) => {
 
 const getAllFeedback = async (req, res) => {
   const { userId: organizationId } = req.user;
-  console.log(organizationId);
+
   try {
     const feedbacks = await Feedback.find({ organization: organizationId });
 
