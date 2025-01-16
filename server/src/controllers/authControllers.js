@@ -28,7 +28,7 @@ const loginUser = async (req, res) => {
     );
 
     if (!passwordMatch) {
-      return res.status(403).json({ error: "Inavlid login credentials" });
+      return res.status(403).json({ error: "Invalid login credentials" });
     }
 
     //declaration of payload
