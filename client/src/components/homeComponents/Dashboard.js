@@ -10,7 +10,7 @@ import {
   faMessage,
   faChartBar,
   faBook,
-  faSignOutAlt
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useNavigate } from "react-router-dom";
