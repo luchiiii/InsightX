@@ -1,34 +1,21 @@
 const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
-
-const {
-  CLIENT_ID,
-  CLIENT_SECRET,
-  ACCESS_TOKEN,
-  REFRESH_TOKEN,
-  EMAIL_USER,
-} = require("../config/index");
-
-const Oauth2 = google.auth.OAuth2;
-
-const myOauth2Client = new Oauth2(
-  CLIENT_ID,
-  CLIENT_SECRET,
-  "https://developers.google.com/oauthplayground"
-);
-
-myOauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+const { EMAIL_USER, EMAIL_APP_PASSWORD } = require("../config/index");
 
 const transport = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    type: "OAuth2",
     user: EMAIL_USER,
-    clientId: CLIENT_ID,
-    clientSecret: CLIENT_SECRET,
-    refreshToken: REFRESH_TOKEN,
-    accessToken: ACCESS_TOKEN,
+    pass: EMAIL_APP_PASSWORD,
   },
+});
+
+// Verify connection on startup
+transport.verify((error, success) => {
+  if (error) {
+    console.error("SMTP Transport Error:", error);
+  } else {
+    console.log("SMTP Transport is ready to send emails");
+  }
 });
 
 module.exports = transport;

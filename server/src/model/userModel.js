@@ -20,6 +20,9 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    otp: {
+      type: String,
+    },
     verificationToken: {
       type: String,
     },

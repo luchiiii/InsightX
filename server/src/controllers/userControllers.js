@@ -16,66 +16,87 @@ const createNewUser = async (req, res) => {
       return res.status(409).json({ error: "User already exists" });
     }
 
-    //create a new user
-    //generate a new otp || verification token
-    const verificationToken = generateOtp();
+    //generate a new otp for user verification
+    const otp = generateOtp();
+    
     //hash the provided password of the user
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    //save the token and the hash password on the database
-    //create a new instance of user from User model
-    let currentDate = new Date();
+    
+    //calculate expiration times 
+    const currentDate = new Date();
+    const tokenExpiresIn = new Date(currentDate.getTime() + 30 * 60 * 1000); // 30 minutes from now
+    const subscriptionExpires = new Date(currentDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
 
     const newUser = new User({
       organizationName,
       email,
       password: hashedPassword,
-      verificationToken,
-      verificationTokenExpiresIn: new Date(currentDate.getTime() + 30 * 60 * 1000),
-      subscriptionExpires: currentDate.setMonth(currentDate.getMonth() + 1),
+      otp, 
+      verificationTokenExpiresIn: tokenExpiresIn,
+      subscriptionExpires: subscriptionExpires,
     });
 
     await newUser.save();
+    
     //check if user info fails to save on database
     if (!newUser) {
       return res.status(400).json({ error: "user creation failed" });
     }
-    //send a generated otp email to the created user
-    sendOtpToUser(newUser.verificationToken, newUser.email);
+    
+    //send the otp email to the created user
+    try {
+      await sendOtpToUser(otp, newUser.email);
+      console.log(`OTP sent successfully to ${newUser.email}`);
+    } catch (emailError) {
+      console.error("Failed to send OTP email:", emailError);
+      // Delete the user if email fails
+      await User.findByIdAndDelete(newUser._id);
+      return res.status(500).json({ 
+        error: "Failed to send verification email. Please try again." 
+      });
+    }
+    
     //return success response if operation is successful
-    return res
-      .status(201)
-      .json({ message: "Account created Successfully", newUser });
+    return res.status(201).json({ 
+      message: "Account created Successfully. Please check your email for the OTP.",
+      newUser: {
+        id: newUser._id,
+        email: newUser.email,
+        organizationName: newUser.organizationName
+      }
+    });
   } catch (error) {
+    console.error("Error in createNewUser:", error);
     res.status(500).json({ error: "Server Error" });
   }
 };
 
 //verify new user function
 const verifyUser = async (req, res) => {
-  const { verificationToken } = req.body;
-
+  const { otp, email } = req.body; 
   try {
-    const userExistsForVerification = await User.findOne({ verificationToken });
+    const userExistsForVerification = await User.findOne({ email, otp });
 
     if (!userExistsForVerification) {
-      return res.status(404).json({ error: "Invalid verification token" });
+      return res.status(404).json({ error: "Invalid email or OTP" });
     }
 
+    // Check if OTP field exists (user might have already been verified)
+    if (!userExistsForVerification.otp) {
+      return res.status(404).json({ error: "Invalid email or OTP" });
+    }
+
+    //check if otp has expired
     const now = new Date();
-    const tokenExpiryDate = new Date(
-      userExistsForVerification.verificationTokenExpiresIn
-    );
-
-    if (
-      now >= tokenExpiryDate
-    ) {
+    const expiryTime = new Date(userExistsForVerification.verificationTokenExpiresIn);
+    
+    if (now > expiryTime) {
       await User.findByIdAndDelete(userExistsForVerification._id.toString());
-
-      return res.status(403).json({ error: "Expired verification token" });
+      return res.status(403).json({ error: "Verification OTP has expired. Please sign up again." });
     }
 
-    userExistsForVerification.verificationToken = undefined;
+    userExistsForVerification.otp = undefined;
     userExistsForVerification.verificationTokenExpiresIn = undefined;
     userExistsForVerification.isVerified = true;
 
@@ -83,8 +104,8 @@ const verifyUser = async (req, res) => {
 
     return res.status(200).json({ message: "User verified successfully" });
   } catch (error) {
+    console.error("Error in verifyUser:", error);
     res.status(500).json({ error: "Server Error" });
-    console.log(error);
   }
 };
 
@@ -101,6 +122,7 @@ const getCurrentUser = async (req, res) => {
 
     res.status(200).json({ message: "User found", currentUser });
   } catch (error) {
+    console.error("Error in getCurrentUser:", error);
     res.status(500).json({ error: "Server Error" });
   }
 };
@@ -129,10 +151,12 @@ const generateApiToken = async (req, res) => {
 
     await currentUser.save();
 
-    res
-      .status(200)
-      .json({ message: "Api token generated", apiKey: currentUser?.apiToken });
+    res.status(200).json({ 
+      message: "Api token generated", 
+      apiKey: currentUser.apiToken 
+    });
   } catch (error) {
+    console.error("Error in generateApiToken:", error);
     res.status(500).json({ error: "Server Error" });
   }
 };

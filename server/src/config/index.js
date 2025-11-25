@@ -12,4 +12,5 @@ module.exports = {
   CLIENT_ID: process.env.CLIENT_ID,
   CLIENT_SECRET: process.env.CLIENT_SECRET,
   EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_APP_PASSWORD: process.env.EMAIL_APP_PASSWORD,
 };
