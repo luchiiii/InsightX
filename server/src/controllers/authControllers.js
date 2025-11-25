@@ -19,8 +19,12 @@ const loginUser = async (req, res) => {
     }
 
     if (!userWithEmailExists.isVerified) {
-      return res.status(403).json({ error: "User account is not verified" });
-    }
+      return res.status(403).json({
+        error: "User account is not verified",
+        unverified: true,      // flag to indicate unverified status
+        email: userWithEmailExists.email // send email to prefill/identify user
+  });
+}
 
     const passwordMatch = bcrypt.compareSync(
       password,
