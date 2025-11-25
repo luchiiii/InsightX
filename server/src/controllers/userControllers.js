@@ -31,9 +31,7 @@ const createNewUser = async (req, res) => {
       email,
       password: hashedPassword,
       verificationToken,
-      verificationTokenExpiresIn: currentDate.setHours(
-        currentDate.getHours() + 1
-      ),
+      verificationTokenExpiresIn: new Date(currentDate.getTime() + 30 * 60 * 1000),
       subscriptionExpires: currentDate.setMonth(currentDate.getMonth() + 1),
     });
 
@@ -64,9 +62,13 @@ const verifyUser = async (req, res) => {
       return res.status(404).json({ error: "Invalid verification token" });
     }
 
+    const now = new Date();
+    const tokenExpiryDate = new Date(
+      userExistsForVerification.verificationTokenExpiresIn
+    );
+
     if (
-      new Date() - userExistsForVerification?.verificationTokenExpiresIn >=
-      60 * 60 * 1000
+      now >= tokenExpiryDate
     ) {
       await User.findByIdAndDelete(userExistsForVerification._id.toString());
 
