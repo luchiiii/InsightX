@@ -7,21 +7,23 @@ import Error from "../../commons/Error";
 const VerifyAccount = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const prefilledEmail = location.state?.email || "";
+  const email = location.state?.email;
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutes
+  const [timeLeft, setTimeLeft] = useState(30 * 60);
   const inputRefs = useRef([]);
 
   const [verifyUser, { isLoading, error, isSuccess, isError }] = useVerifyUserMutation();
 
-  // Autofocus first input
   useEffect(() => {
+    if (!email) {
+      navigate("/auth/signup", { replace: true });
+      return;
+    }
     inputRefs.current[0]?.focus();
-  }, []);
+  }, [email, navigate]);
 
-  // Countdown timer
   useEffect(() => {
     if (timeLeft <= 0) {
       setInputDisabled(true);
@@ -46,20 +48,22 @@ const VerifyAccount = () => {
   };
 
   const handleSubmit = async () => {
-    const verificationToken = code.join("");
-    if (verificationToken.length !== 6) return;
+    const otp = code.join("");
+    if (otp.length !== 6) return;
 
     try {
-      await verifyUser({ verificationToken, email: prefilledEmail }).unwrap();
+      await verifyUser({ 
+        otp: otp,
+        email: email 
+      }).unwrap();
     } catch (err) {
       console.error("Verification failed:", err);
     }
   };
 
-  // Navigate to login after successful verification
   useEffect(() => {
     if (isSuccess) {
-      navigate("/auth/login", { replace: true });
+      navigate("/auth/verification-success", { replace: true });
     }
   }, [isSuccess, navigate]);
 
@@ -79,12 +83,12 @@ const VerifyAccount = () => {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-1">Verify Your Email</h1>
             <p className="text-gray-600">
-              We've sent a verification code to {prefilledEmail || "your email"}
+              We've sent a verification code to {email}
             </p>
             <p className="text-sm text-gray-500 mt-2">Time remaining: {formatTime(timeLeft)}</p>
           </div>
 
-          {isError && <Error errorMessage={error?.data?.error || "Something went wrong"} />}
+          {isError && <Error errorMessage={error?.data?.error || "Verification failed"} />}
 
           <div className="space-y-6">
             <div className="flex justify-center gap-3">
@@ -112,7 +116,7 @@ const VerifyAccount = () => {
             </button>
 
             <p className="text-center text-sm text-gray-600">
-              Didn't receive the code?{" "}
+              Didn't receive the code?
               <button
                 disabled={isLoading}
                 className="text-purple-600 hover:text-purple-700 font-medium transition-colors"
