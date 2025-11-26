@@ -39,8 +39,10 @@ const Signup = () => {
   };
 
   useEffect(() => {
-    if (isSuccess) navigate('/auth/verify');
-  }, [isSuccess]);
+    if (isSuccess) {
+      navigate('/auth/verify', { state: { email: formData.email } });
+    }
+  }, [isSuccess, navigate, formData.email]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center p-4 relative">
@@ -60,7 +62,6 @@ const Signup = () => {
           {formError && <Error errorMessage={formError} />}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* Organization Name */}
             <div className="space-y-2">
               <label htmlFor="organizationName" className="text-sm font-medium text-gray-700">Organization Name</label>
               <div className="relative">
@@ -78,7 +79,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</label>
               <div className="relative">
@@ -96,7 +96,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
               <div className="relative">
