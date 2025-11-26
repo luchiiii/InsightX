@@ -5,6 +5,7 @@ import AuthPage from "../pages/AuthPage";
 import Login from "../components/authComponents/Login";
 import Signup from "../components/authComponents/Signup";
 import VerifyAccount from "../components/authComponents/VerifyAccount";
+import VerificationSuccess from "../components/authComponents/VerificationSuccess";
 import DashboardPage from "../pages/DashboardPage";
 import ResultPage from "../pages/ResultPage";
 
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="verify" element={<VerifyAccount />} />
+        <Route path="verification-success" element={<VerificationSuccess />} />
       </Route>
 
       <Route
