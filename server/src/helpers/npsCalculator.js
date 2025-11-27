@@ -1,38 +1,70 @@
-const calculateNPS = (feedbacks) => {
-  let report = {
-    promoters: 0,
-    passive: 0,
-    detractors: 0,
-    currentNpsScore: 0,
-  };
-
-  for (let feedback of feedbacks) {
-    if (feedback?.feedback && feedback?.feedback.length > 0) {
-      for (let response of feedback?.feedback) {
-        if (response.score === 9 || response.score === 10) {
-          report.promoters += 1;
-        } else if (response.score === 7 || response.score === 8) {
-          report.passive += 1;
-        } else {
-          report.detractors += 1;
-        }
-      }
-    }
+const calculateNPS = (feedbackArray) => {
+  if (!feedbackArray || feedbackArray.length === 0) {
+    return {
+      promoters: 0,
+      passive: 0,
+      detractors: 0,
+      promotersPercentage: 0,
+      passivePercentage: 0,
+      detractorsPercentage: 0,
+      totalResponses: 0,
+      npsScore: 0,
+    };
   }
 
-  const totalFeedback = report.promoters + report.detractors + report.passive;
+  let promoters = 0;
+  let passive = 0;
+  let detractors = 0;
+  let ratingCount = 0;
 
-  const overallReport = {
-    ...report,
-    promotersPercentage: Math.round((report.promoters / totalFeedback) * 100),
-    detractorsPercentage: Math.round((report.detractors / totalFeedback) * 100),
-    totalFeedback,
-  };
+  feedbackArray.forEach((feedback) => {
+    if (feedback.responses && Array.isArray(feedback.responses)) {
+      feedback.responses.forEach((response) => {
+        if (response.type === "rating" && typeof response.answer === "number") {
+          ratingCount++;
+          const score = response.answer;
+
+          if (score >= 9) {
+            promoters++;
+          } else if (score >= 7) {
+            passive++;
+          } else {
+            detractors++;
+          }
+        }
+      });
+    }
+  });
+
+  const totalResponses = promoters + passive + detractors;
+
+  if (totalResponses === 0) {
+    return {
+      promoters: 0,
+      passive: 0,
+      detractors: 0,
+      promotersPercentage: 0,
+      passivePercentage: 0,
+      detractorsPercentage: 0,
+      totalResponses: 0,
+      npsScore: 0,
+    };
+  }
+
+  const promotersPercentage = Math.round((promoters / totalResponses) * 100);
+  const passivePercentage = Math.round((passive / totalResponses) * 100);
+  const detractorsPercentage = Math.round((detractors / totalResponses) * 100);
+  const npsScore = promotersPercentage - detractorsPercentage;
 
   return {
-    ...overallReport,
-    currentNpsScore:
-      overallReport.promotersPercentage - overallReport.detractorsPercentage,
+    promoters,
+    passive,
+    detractors,
+    promotersPercentage,
+    passivePercentage,
+    detractorsPercentage,
+    totalResponses,
+    npsScore,
   };
 };
 

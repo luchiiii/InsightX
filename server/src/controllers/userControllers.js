@@ -3,9 +3,7 @@ const User = require("../model/userModel");
 const generateOtp = require("../helpers/generateToken");
 const { sendOtpToUser } = require("../helpers/emailHelpers");
 const { generateToken } = require("../helpers/jwtHelpers");
-const { API_JWT_SECRET } = require("../config/index");
 
-//create new user
 const createNewUser = async (req, res) => {
   const { organizationName, email, password } = req.body;
 
@@ -16,17 +14,13 @@ const createNewUser = async (req, res) => {
       return res.status(409).json({ error: "User already exists" });
     }
 
-    //generate a new otp for user verification
     const otp = generateOtp();
-    
-    //hash the provided password of the user
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
     
-    //calculate expiration times 
     const currentDate = new Date();
-    const tokenExpiresIn = new Date(currentDate.getTime() + 30 * 60 * 1000); // 30 minutes from now
-    const subscriptionExpires = new Date(currentDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+    const tokenExpiresIn = new Date(currentDate.getTime() + 30 * 60 * 1000);
+    const subscriptionExpires = new Date(currentDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     const newUser = new User({
       organizationName,
@@ -38,28 +32,22 @@ const createNewUser = async (req, res) => {
     });
 
     await newUser.save();
-    
-    //check if user info fails to save on database
+
     if (!newUser) {
       return res.status(400).json({ error: "user creation failed" });
     }
     
-    //send the otp email to the created user
     try {
       await sendOtpToUser(otp, newUser.email);
-      console.log(`OTP sent successfully to ${newUser.email}`);
+      console.log(`OTP sent to ${newUser.email}`);
     } catch (emailError) {
-      console.error("Failed to send OTP email:", emailError);
-      // Delete the user if email fails
+      console.error("Email error:", emailError.message);
       await User.findByIdAndDelete(newUser._id);
-      return res.status(500).json({ 
-        error: "Failed to send verification email. Please try again." 
-      });
+      return res.status(500).json({ error: "Failed to send verification email" });
     }
     
-    //return success response if operation is successful
     return res.status(201).json({ 
-      message: "Account created Successfully. Please check your email for the OTP.",
+      message: "Account created. Check your email for OTP.",
       newUser: {
         id: newUser._id,
         email: newUser.email,
@@ -67,49 +55,56 @@ const createNewUser = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Error in createNewUser:", error);
-    res.status(500).json({ error: "Server Error" });
+    console.error("Create user error:", error.message);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-//verify new user function
 const verifyUser = async (req, res) => {
-  const { otp, email } = req.body; 
+  const { otp, email } = req.body;
+
   try {
-    const userExistsForVerification = await User.findOne({ email, otp });
+    console.log("Verify request - Email:", email, "OTP:", otp, "OTP Type:", typeof otp);
+    
+    const user = await User.findOne({ email, otp });
+    console.log("User found with email+otp?", !!user);
 
-    if (!userExistsForVerification) {
+    if (!user) {
+      const userByEmail = await User.findOne({ email });
+      if (userByEmail) {
+        console.log("User found by email only");
+        console.log("Stored OTP:", userByEmail.otp, "Type:", typeof userByEmail.otp);
+        console.log("Received OTP:", otp, "Type:", typeof otp);
+        console.log("OTPs match?", userByEmail.otp === otp);
+      }
       return res.status(404).json({ error: "Invalid email or OTP" });
     }
 
-    // Check if OTP field exists (user might have already been verified)
-    if (!userExistsForVerification.otp) {
+    if (!user.otp) {
       return res.status(404).json({ error: "Invalid email or OTP" });
     }
 
-    //check if otp has expired
     const now = new Date();
-    const expiryTime = new Date(userExistsForVerification.verificationTokenExpiresIn);
+    const expiryTime = new Date(user.verificationTokenExpiresIn);
     
     if (now > expiryTime) {
-      await User.findByIdAndDelete(userExistsForVerification._id.toString());
-      return res.status(403).json({ error: "Verification OTP has expired. Please sign up again." });
+      await User.findByIdAndDelete(user._id);
+      return res.status(403).json({ error: "OTP expired. Sign up again." });
     }
 
-    userExistsForVerification.otp = undefined;
-    userExistsForVerification.verificationTokenExpiresIn = undefined;
-    userExistsForVerification.isVerified = true;
+    user.otp = undefined;
+    user.verificationTokenExpiresIn = undefined;
+    user.isVerified = true;
 
-    await userExistsForVerification.save();
+    await user.save();
 
     return res.status(200).json({ message: "User verified successfully" });
   } catch (error) {
-    console.error("Error in verifyUser:", error);
-    res.status(500).json({ error: "Server Error" });
+    console.error("Verify user error:", error.message);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-//get current user information
 const getCurrentUser = async (req, res) => {
   const { userId } = req.user;
 
@@ -122,14 +117,14 @@ const getCurrentUser = async (req, res) => {
 
     res.status(200).json({ message: "User found", currentUser });
   } catch (error) {
-    console.error("Error in getCurrentUser:", error);
-    res.status(500).json({ error: "Server Error" });
+    console.error("Get current user error:", error.message);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-//generate api token for user
 const generateApiToken = async (req, res) => {
   const { userId } = req.user;
+
   try {
     const currentUser = await User.findById(userId);
 
@@ -144,11 +139,10 @@ const generateApiToken = async (req, res) => {
     );
 
     if (!apiToken) {
-      return res.status(403).json({ error: "Api token generation failed" });
+      return res.status(403).json({ error: "Token generation failed" });
     }
 
     currentUser.apiToken = apiToken;
-
     await currentUser.save();
 
     res.status(200).json({ 
@@ -156,8 +150,8 @@ const generateApiToken = async (req, res) => {
       apiKey: currentUser.apiToken 
     });
   } catch (error) {
-    console.error("Error in generateApiToken:", error);
-    res.status(500).json({ error: "Server Error" });
+    console.error("Generate API token error:", error.message);
+    res.status(500).json({ error: "Server error" });
   }
 };
 

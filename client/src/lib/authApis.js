@@ -21,7 +21,9 @@ export const authApi = createApi({
         try {
           await queryFulfilled;
           await dispatch(userApi.endpoints.getCurrentUser.initiate());
-        } catch (error) {}
+        } catch (error) {
+          console.error("Login error:", error);
+        }
       },
     }),
 
@@ -31,12 +33,14 @@ export const authApi = createApi({
         method: "GET",
         credentials: "include",
       }),
-      //automatically update user state if logout user function is successful
+
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
           dispatch(clearCurrentUser());
-        } catch (error) {}
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
       },
     }),
   }),
