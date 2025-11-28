@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { Plus, Eye, Edit2, Trash2, Copy, AlertCircle } from "lucide-react";
+import { Plus, Eye, Edit2, Trash2, Copy, AlertCircle, X, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   useGetUserFormsQuery,
   useCreateFormMutation,
   useDeleteFormMutation,
+  useUpdateFormMutation,
 } from "../../lib/feedbackApi";
 
 const FormsPage = () => {
   const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingFormId, setEditingFormId] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -29,9 +31,29 @@ const FormsPage = () => {
     error: fetchError,
   } = useGetUserFormsQuery();
   const [createForm, { isLoading: isCreating }] = useCreateFormMutation();
+  const [updateForm, { isLoading: isUpdating }] = useUpdateFormMutation();
   const [deleteForm, { isLoading: isDeleting }] = useDeleteFormMutation();
 
   const forms = formsData?.data || [];
+
+  const openEditModal = (form) => {
+    setEditingFormId(form._id);
+    setFormData({
+      title: form.title,
+      description: form.description,
+      questions: form.questions || [],
+    });
+    setShowCreateModal(true);
+    setError("");
+  };
+
+  const closeModal = () => {
+    setShowCreateModal(false);
+    setEditingFormId(null);
+    setFormData({ title: "", description: "", questions: [] });
+    setNewQuestion({ text: "", type: "rating", required: true });
+    setError("");
+  };
 
   const handleCreateForm = async (e) => {
     e.preventDefault();
@@ -55,17 +77,28 @@ const FormsPage = () => {
           ];
 
     try {
-      await createForm({
-        title: formData.title,
-        description: formData.description,
-        questions: questionsToCreate,
-      }).unwrap();
+      if (editingFormId) {
+        // Update existing form - pass formId and formData separately
+        await updateForm({
+          formId: editingFormId,
+          formData: {
+            title: formData.title,
+            description: formData.description,
+            questions: questionsToCreate,
+          },
+        }).unwrap();
+      } else {
+        // Create new form
+        await createForm({
+          title: formData.title,
+          description: formData.description,
+          questions: questionsToCreate,
+        }).unwrap();
+      }
 
-      setShowCreateModal(false);
-      setFormData({ title: "", description: "", questions: [] });
-      setNewQuestion({ text: "", type: "rating", required: true });
+      closeModal();
     } catch (err) {
-      setError(err?.data?.error || "Failed to create form");
+      setError(err?.data?.error || "Failed to save form");
     }
   };
 
@@ -148,7 +181,12 @@ const FormsPage = () => {
           </p>
         </div>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            setEditingFormId(null);
+            setFormData({ title: "", description: "", questions: [] });
+            setShowCreateModal(true);
+            setError("");
+          }}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all"
         >
           <Plus className="w-5 h-5" />
@@ -180,7 +218,12 @@ const FormsPage = () => {
             Create your first feedback form to start collecting responses
           </p>
           <button
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => {
+              setEditingFormId(null);
+              setFormData({ title: "", description: "", questions: [] });
+              setShowCreateModal(true);
+              setError("");
+            }}
             className="inline-flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
@@ -217,7 +260,7 @@ const FormsPage = () => {
                     title="Copy shareable link"
                   >
                     {copiedId === form.shareableLink ? (
-                      "✓"
+                      <span className="text-green-600">✓</span>
                     ) : (
                       <Copy className="w-5 h-5" />
                     )}
@@ -230,6 +273,14 @@ const FormsPage = () => {
                     <Eye className="w-5 h-5" />
                   </button>
                   <button
+                    onClick={() => navigate(`/dashboard/forms/${form._id}/analytics`)}
+                    className="p-2 hover:bg-purple-100 rounded-lg text-purple-600 hover:text-purple-700 transition-colors"
+                    title="View analytics"
+                  >
+                    <BarChart3 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => openEditModal(form)}
                     className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-gray-900 transition-colors"
                     title="Edit form"
                   >
@@ -253,9 +304,17 @@ const FormsPage = () => {
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Create New Form
-            </h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {editingFormId ? "Edit Form" : "Create New Form"}
+              </h2>
+              <button
+                onClick={closeModal}
+                className="p-1 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
             <form onSubmit={handleCreateForm} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -388,21 +447,21 @@ const FormsPage = () => {
               <div className="flex gap-3 pt-4 border-t">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    setError("");
-                    setFormData({ title: "", description: "", questions: [] });
-                  }}
+                  onClick={closeModal}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={isCreating}
+                  disabled={isCreating || isUpdating}
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all font-medium disabled:opacity-50"
                 >
-                  {isCreating ? "Creating..." : "Create Form"}
+                  {isCreating || isUpdating
+                    ? "Saving..."
+                    : editingFormId
+                    ? "Update Form"
+                    : "Create Form"}
                 </button>
               </div>
             </form>
