@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Plus, Eye } from "lucide-react";
+import { Plus, Eye, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGetUserFormsQuery } from "../../lib/feedbackApi";
 
@@ -9,24 +9,69 @@ const OverviewPage = () => {
   const { user } = useSelector((state) => state.userState);
   const { data: formsData, isLoading } = useGetUserFormsQuery();
   const [showApiKey, setShowApiKey] = useState(false);
+  const [averageNps, setAverageNps] = useState(0);
+  const [npsLoading, setNpsLoading] = useState(false);
 
   const forms = formsData?.data || [];
 
+  useEffect(() => {
+    if (forms.length > 0) {
+      fetchAndCalculateNps();
+    }
+  }, [forms]);
+
+  const fetchAndCalculateNps = async () => {
+    setNpsLoading(true);
+    try {
+      let totalNps = 0;
+      let formsWithData = 0;
+
+      for (const form of forms) {
+        try {
+          const response = await fetch(
+            `${process.env.REACT_APP_API_BASE_URL}/feedback/${form._id}/analytics`,
+            {
+              method: "GET",
+              credentials: "include",
+            }
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            if (result.data?.nps?.npsScore !== undefined) {
+              totalNps += result.data.nps.npsScore;
+              formsWithData++;
+            }
+          }
+        } catch (err) {
+          console.error(`Error fetching analytics for form ${form._id}:`, err);
+        }
+      }
+
+      if (formsWithData > 0) {
+        setAverageNps(Math.round(totalNps / formsWithData));
+      } else {
+        setAverageNps(0);
+      }
+    } catch (error) {
+      console.error("Error calculating NPS:", error);
+      setAverageNps(0);
+    } finally {
+      setNpsLoading(false);
+    }
+  };
+
   const calculateStats = () => {
     let totalResponses = 0;
-    let totalNps = 0;
     let formCount = forms.length;
 
     forms.forEach((form) => {
       totalResponses += form.responseCount || 0;
     });
 
-    const averageNps = formCount > 0 ? Math.floor(totalNps / formCount) : 0;
-
     return {
       totalForms: formCount,
       totalResponses,
-      averageNps,
     };
   };
 
@@ -58,6 +103,13 @@ const OverviewPage = () => {
 
   return (
     <div className="space-y-8">
+      <button
+        onClick={() => navigate("/")}
+        className="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        Back to Home
+      </button>
       <div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Welcome back, {user?.organizationName}
@@ -103,8 +155,17 @@ const OverviewPage = () => {
             <div>
               <p className="text-gray-600 text-sm font-medium">Average NPS</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
-                {stats.averageNps}
+                {npsLoading ? (
+                  <span className="text-lg text-gray-400">...</span>
+                ) : (
+                  averageNps
+                )}
               </p>
+              {stats.totalForms > 0 && !npsLoading && (
+                <p className="text-xs text-gray-500 mt-1">
+                  from {stats.totalForms} form{stats.totalForms > 1 ? "s" : ""}
+                </p>
+              )}
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <span className="text-2xl">📈</span>

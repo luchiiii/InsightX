@@ -9,6 +9,7 @@ import Signup from "../components/authComponents/Signup";
 import VerifyAccount from "../components/authComponents/VerifyAccount";
 import VerificationSuccess from "../components/authComponents/VerificationSuccess";
 import Dashboard from "../components/homeComponents/Dashboard";
+import FormAnalyticsPage from "../components/homeComponents/FormAnalyticsPage";
 
 const AppRoutes = () => {
   const { user } = useSelector((state) => state.userState);
@@ -31,6 +32,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoutes user={user}>
             <Dashboard />
+          </ProtectedRoutes>
+        }
+      />
+
+      <Route
+        path="/dashboard/forms/:formId/analytics"
+        element={
+          <ProtectedRoutes user={user}>
+            <FormAnalyticsPage />
           </ProtectedRoutes>
         }
       />

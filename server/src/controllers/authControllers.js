@@ -22,7 +22,7 @@ const loginUser = async (req, res) => {
       return res.status(403).json({
         error: "User account is not verified",
         unverified: true,      // flag to indicate unverified status
-        email: userWithEmailExists.email // send email to prefill/identify user
+        email: userWithEmailExists.email // send email to identify user
   });
 }
 

@@ -5,7 +5,7 @@ const sendOtpToUser = async (otp, email) => {
   const mailOptions = {
     from: EMAIL_USER,
     to: email,
-    subject: "🔐 Verify Your Email - OTP Inside",
+    subject: "Verify Your Email - OTP",
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -20,22 +20,18 @@ const sendOtpToUser = async (otp, email) => {
           }
           
           body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
             padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
           }
           
           .container {
-            max-width: 500px;
-            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           }
           
           .header {
@@ -45,10 +41,23 @@ const sendOtpToUser = async (otp, email) => {
             color: white;
           }
           
+          .brand-color {
+            color: #667eea;
+          }
+          
+          .brand-bg {
+            background-color: #667eea;
+          }
+          
+          .brand-border {
+            border-color: #667eea;
+          }
+          
           .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 8px;
-            font-weight: 700;
+            font-weight: 600;
+            letter-spacing: -0.5px;
           }
           
           .header p {
@@ -58,22 +67,21 @@ const sendOtpToUser = async (otp, email) => {
           
           .content {
             padding: 40px 30px;
-            text-align: center;
           }
           
-          .welcome-text {
-            font-size: 16px;
+          .greeting {
+            font-size: 15px;
             color: #333;
-            margin-bottom: 30px;
             line-height: 1.6;
+            margin-bottom: 25px;
           }
           
-          .otp-box {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px;
-            padding: 30px 20px;
+          .otp-section {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 25px;
             margin: 30px 0;
-            border: 2px solid #667eea;
+            border-radius: 4px;
           }
           
           .otp-label {
@@ -81,98 +89,89 @@ const sendOtpToUser = async (otp, email) => {
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-weight: 600;
           }
           
           .otp-code {
-            font-size: 48px;
-            font-weight: 800;
+            font-size: 42px;
+            font-weight: 700;
             color: #667eea;
-            letter-spacing: 8px;
-            font-family: 'Courier New', monospace;
+            letter-spacing: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            text-align: center;
             margin: 15px 0;
             user-select: all;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
           }
           
-          .otp-subtext {
-            font-size: 13px;
+          .otp-validity {
+            font-size: 12px;
             color: #999;
-            margin-top: 15px;
+            text-align: center;
+            margin-top: 12px;
           }
           
           .info-box {
             background: #f0f4ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
+            border-radius: 4px;
+            padding: 16px;
             margin: 25px 0;
-            border-radius: 6px;
-            text-align: left;
           }
           
           .info-box p {
             font-size: 13px;
             color: #555;
-            margin: 8px 0;
-            line-height: 1.5;
+            margin: 10px 0;
+            line-height: 1.6;
           }
           
           .info-box strong {
             color: #667eea;
-          }
-          
-          .footer {
-            background: #f9f9f9;
-            padding: 25px 30px;
-            border-top: 1px solid #eee;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-          }
-          
-          .footer p {
-            margin: 5px 0;
-            line-height: 1.6;
-          }
-          
-          .security-badge {
-            display: inline-block;
-            margin: 20px 0 0 0;
-            padding: 8px 12px;
-            background: #e8f5e9;
-            border: 1px solid #4caf50;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #2e7d32;
             font-weight: 600;
           }
           
-          .button-wrapper {
-            margin: 30px 0;
+          .security-note {
+            font-size: 12px;
+            color: #d32f2f;
+            font-weight: 600;
+            margin-top: 15px;
           }
           
-          .action-text {
-            font-size: 14px;
-            color: #666;
-            margin: 20px 0;
+          .footer {
+            background: #fafafa;
+            padding: 25px 30px;
+            border-top: 1px solid #eee;
+            text-align: center;
+          }
+          
+          .footer-text {
+            font-size: 12px;
+            color: #999;
+            margin: 8px 0;
+            line-height: 1.5;
+          }
+          
+          .divider {
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
           }
           
           @media (max-width: 600px) {
-            .container {
-              border-radius: 8px;
-            }
-            
             .content {
               padding: 25px 20px;
             }
             
             .otp-code {
-              font-size: 36px;
+              font-size: 32px;
               letter-spacing: 4px;
             }
             
             .header h1 {
-              font-size: 24px;
+              font-size: 20px;
             }
           }
         </style>
@@ -180,40 +179,41 @@ const sendOtpToUser = async (otp, email) => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🔐 Email Verification</h1>
-            <p>Secure your account with a one-time code</p>
+            <h1>Email Verification</h1>
+            <p>Secure your InsightX account</p>
           </div>
           
           <div class="content">
-            <p class="welcome-text">
-              Hello! We're excited to have you join us. To complete your account setup, please verify your email address.
+            <p class="greeting">
+              Hello,<br><br>
+              Thank you for signing up with InsightX. Please verify your email address to activate your account using the verification code below.
             </p>
             
-            <div class="otp-box">
+            <div class="otp-section">
               <div class="otp-label">Your Verification Code</div>
               <div class="otp-code">${otp}</div>
-              <div class="otp-subtext">This code will expire in <strong>30 minutes</strong></div>
+              <div class="otp-validity">This code will expire in 30 minutes</div>
             </div>
-            
-            <p class="action-text">
-              Enter this code in the verification field to activate your account.
-            </p>
             
             <div class="info-box">
-              <p><strong>⏱️ Code Validity:</strong> This OTP expires in 30 minutes</p>
-              <p><strong>🔒 Security:</strong> Never share this code with anyone</p>
-              <p><strong>❌ Didn't Request?:</strong> Ignore this email if you didn't create an account</p>
+              <p><strong>Code Validity:</strong> This OTP expires in 30 minutes. Do not share it with anyone.</p>
+              <p><strong>Security:</strong> InsightX will never ask for this code via email or phone.</p>
+              <p><strong>Not You?</strong> If you didn't create this account, please ignore this email.</p>
+              <p class="security-note">Keep this code confidential. Do not share it with anyone.</p>
             </div>
             
-            <div class="security-badge">✓ 100% Secure & Encrypted</div>
+            <p style="font-size: 13px; color: #666; line-height: 1.6;">
+              Enter this code in the verification field to complete your account setup and start using InsightX.
+            </p>
           </div>
           
           <div class="footer">
-            <p><strong>Need Help?</strong> Contact our support team at okwuosaoluchi95@gmail.com</p>
-            <p>© 2024 InsightX. All rights reserved.</p>
-            <p style="margin-top: 15px; font-size: 11px;">
+            <div class="footer-text"><strong>Need Help?</strong> Contact us at support@insightx.com</div>
+            <div class="divider"></div>
+            <div class="footer-text">© 2024 InsightX. All rights reserved.</div>
+            <div class="footer-text" style="font-size: 11px; margin-top: 10px;">
               This is an automated email. Please do not reply directly to this message.
-            </p>
+            </div>
           </div>
         </div>
       </body>
@@ -224,22 +224,19 @@ const sendOtpToUser = async (otp, email) => {
   return new Promise((resolve, reject) => {
     transport.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error("Error sending OTP email:", error);
         reject(error);
       } else {
-        console.log("OTP sent successfully");
         resolve(info);
       }
     });
   });
 };
 
-//send password reset email
 const sendPasswordResetEmail = async (resetPasswordToken, email) => {
   const mailOptions = {
     from: EMAIL_USER,
     to: email,
-    subject: "🔑 Reset Your Password",
+    subject: "Reset Your Password",
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -254,22 +251,18 @@ const sendPasswordResetEmail = async (resetPasswordToken, email) => {
           }
           
           body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
             padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
           }
           
           .container {
-            max-width: 500px;
-            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           }
           
           .header {
@@ -280,29 +273,34 @@ const sendPasswordResetEmail = async (resetPasswordToken, email) => {
           }
           
           .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             margin-bottom: 8px;
-            font-weight: 700;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+          }
+          
+          .header p {
+            font-size: 14px;
+            opacity: 0.9;
           }
           
           .content {
             padding: 40px 30px;
-            text-align: center;
           }
           
-          .welcome-text {
-            font-size: 16px;
+          .greeting {
+            font-size: 15px;
             color: #333;
-            margin-bottom: 25px;
             line-height: 1.6;
+            margin-bottom: 25px;
           }
           
-          .token-box {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 12px;
-            padding: 25px 20px;
+          .token-section {
+            background: #f9f9f9;
+            border-left: 4px solid #f5576c;
+            padding: 25px;
             margin: 30px 0;
-            border: 2px solid #f5576c;
+            border-radius: 4px;
           }
           
           .token-label {
@@ -310,63 +308,70 @@ const sendPasswordResetEmail = async (resetPasswordToken, email) => {
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-weight: 600;
           }
           
           .token-code {
-            font-size: 14px;
-            font-weight: 700;
-            color: #f5576c;
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
             word-break: break-all;
-            font-family: 'Courier New', monospace;
+            font-family: 'Monaco', 'Courier New', monospace;
             margin: 15px 0;
             user-select: all;
             background: white;
             padding: 12px;
-            border-radius: 6px;
+            border-radius: 4px;
+            line-height: 1.5;
           }
           
           .warning-box {
             background: #fff3e0;
             border-left: 4px solid #ff9800;
-            padding: 15px;
+            padding: 16px;
             margin: 25px 0;
-            border-radius: 6px;
-            text-align: left;
+            border-radius: 4px;
           }
           
           .warning-box p {
             font-size: 13px;
             color: #e65100;
-            margin: 5px 0;
-          }
-          
-          .footer {
-            background: #f9f9f9;
-            padding: 25px 30px;
-            border-top: 1px solid #eee;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-          }
-          
-          .footer p {
-            margin: 5px 0;
+            margin: 8px 0;
             line-height: 1.6;
           }
           
+          .warning-box strong {
+            font-weight: 600;
+          }
+          
+          .footer {
+            background: #fafafa;
+            padding: 25px 30px;
+            border-top: 1px solid #eee;
+            text-align: center;
+          }
+          
+          .footer-text {
+            font-size: 12px;
+            color: #999;
+            margin: 8px 0;
+            line-height: 1.5;
+          }
+          
+          .divider {
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
+          }
+          
           @media (max-width: 600px) {
-            .container {
-              border-radius: 8px;
-            }
-            
             .content {
               padding: 25px 20px;
             }
             
             .header h1 {
-              font-size: 24px;
+              font-size: 20px;
             }
           }
         </style>
@@ -374,33 +379,39 @@ const sendPasswordResetEmail = async (resetPasswordToken, email) => {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🔑 Password Reset</h1>
-            <p>Reset your account password securely</p>
+            <h1>Password Reset Request</h1>
+            <p>Secure your InsightX account</p>
           </div>
           
           <div class="content">
-            <p class="welcome-text">
-              We received a request to reset your password. Use the token below to create a new password for your account.
+            <p class="greeting">
+              Hello,<br><br>
+              We received a request to reset the password for your InsightX account. Use the reset token below to create a new password. This token is valid for 30 minutes.
             </p>
             
-            <div class="token-box">
+            <div class="token-section">
               <div class="token-label">Your Reset Token</div>
               <div class="token-code">${resetPasswordToken}</div>
             </div>
             
             <div class="warning-box">
-              <p><strong>⚠️ Important:</strong> This token expires in 30 minutes</p>
-              <p><strong>🔒 Security:</strong> Never share this token with anyone</p>
-              <p><strong>❌ Didn't Request?:</strong> Ignore this email. Your password is still secure.</p>
+              <p><strong>Token Validity:</strong> This reset token expires in 30 minutes.</p>
+              <p><strong>Security:</strong> Never share this token with anyone. InsightX staff will never ask for it.</p>
+              <p><strong>Not You?:</strong> If you didn't request this password reset, please ignore this email. Your account remains secure.</p>
             </div>
+            
+            <p style="font-size: 13px; color: #666; line-height: 1.6;">
+              If you have any questions or need assistance, please contact our support team.
+            </p>
           </div>
           
           <div class="footer">
-            <p><strong>Need Help?</strong> Contact our support team at okwuosaoluchi95@gmail.com</p>
-            <p>© 2024 InsightX. All rights reserved.</p>
-            <p style="margin-top: 15px; font-size: 11px;">
+            <div class="footer-text"><strong>Need Help?</strong> Contact us at support@insightx.com</div>
+            <div class="divider"></div>
+            <div class="footer-text">© 2024 InsightX. All rights reserved.</div>
+            <div class="footer-text" style="font-size: 11px; margin-top: 10px;">
               This is an automated email. Please do not reply directly to this message.
-            </p>
+            </div>
           </div>
         </div>
       </body>
@@ -411,10 +422,8 @@ const sendPasswordResetEmail = async (resetPasswordToken, email) => {
   return new Promise((resolve, reject) => {
     transport.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error("Error sending password reset email:", error);
         reject(error);
       } else {
-        console.log("Password reset email sent successfully");
         resolve(info);
       }
     });

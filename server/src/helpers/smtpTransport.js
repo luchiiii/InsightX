@@ -9,13 +9,4 @@ const transport = nodemailer.createTransport({
   },
 });
 
-// Verify connection on startup
-transport.verify((error, success) => {
-  if (error) {
-    console.error("SMTP Transport Error:", error);
-  } else {
-    console.log("SMTP Transport is ready to send emails");
-  }
-});
-
 module.exports = transport;

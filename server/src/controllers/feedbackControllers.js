@@ -24,6 +24,7 @@ const submitFeedback = async (req, res) => {
 
     await newFeedback.save();
 
+    // Increment response count in the form
     await Form.findByIdAndUpdate(
       formId,
       { $inc: { responseCount: 1 } },
@@ -36,11 +37,11 @@ const submitFeedback = async (req, res) => {
       data: { id: newFeedback._id },
     });
   } catch (error) {
-    console.error("Submit feedback error:", error);
     res.status(500).json({ error: "Failed to submit feedback" });
   }
 };
 
+//function to get all responses for a specific form
 const getFormResponses = async (req, res) => {
   const { userId } = req.user;
   const { formId } = req.params;
@@ -52,6 +53,7 @@ const getFormResponses = async (req, res) => {
       return res.status(404).json({ error: "Form not found" });
     }
 
+    //to ensure only the form owner can access the responses
     if (form.organization.toString() !== userId) {
       return res.status(403).json({ error: "Unauthorized" });
     }
@@ -82,14 +84,15 @@ const getFormAnalytics = async (req, res) => {
       return res.status(404).json({ error: "Form not found" });
     }
 
+    //to ensure only the form owner can access the analytics
     if (form.organization.toString() !== userId) {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
     const responses = await Feedback.find({ form: formId });
-
     const npsData = calculateNPS(responses);
 
+    //Aggregate statistics by question
     const questionStats = {};
     form.questions.forEach((question) => {
       questionStats[question.questionId] = {
@@ -108,6 +111,7 @@ const getFormAnalytics = async (req, res) => {
       });
     });
 
+    //Calculate averages for rating questions
     Object.keys(questionStats).forEach((qId) => {
       const answers = questionStats[qId].responses;
       if (answers.length > 0 && questionStats[qId].type === "rating") {
@@ -126,11 +130,11 @@ const getFormAnalytics = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Get analytics error:", error);
     res.status(500).json({ error: "Failed to retrieve analytics" });
   }
 };
 
+// function to create a new form
 const createForm = async (req, res) => {
   const { userId } = req.user;
   const { title, description, questions } = req.body;
@@ -142,6 +146,7 @@ const createForm = async (req, res) => {
         .json({ error: "Title and questions are required" });
     }
 
+    //generate unique shareable link
     const shareableLink = `form-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)}`;
@@ -162,11 +167,11 @@ const createForm = async (req, res) => {
       data: newForm,
     });
   } catch (error) {
-    console.error("Create form error:", error);
     res.status(500).json({ error: "Failed to create form" });
   }
 };
 
+//function to get all forms for a specific user
 const getUserForms = async (req, res) => {
   const { userId } = req.user;
 
@@ -181,11 +186,11 @@ const getUserForms = async (req, res) => {
       count: forms.length,
     });
   } catch (error) {
-    console.error("Get user forms error:", error);
     res.status(500).json({ error: "Failed to retrieve forms" });
   }
 };
 
+//function to get form by shareable link
 const getFormByLink = async (req, res) => {
   const { shareableLink } = req.params;
 
@@ -203,11 +208,11 @@ const getFormByLink = async (req, res) => {
       data: form,
     });
   } catch (error) {
-    console.error("Get form by link error:", error);
     res.status(500).json({ error: "Failed to retrieve form" });
   }
 };
 
+//function to update a form
 const updateForm = async (req, res) => {
   const { userId } = req.user;
   const { formId } = req.params;
@@ -220,6 +225,7 @@ const updateForm = async (req, res) => {
       return res.status(404).json({ error: "Form not found" });
     }
 
+    //to ensure only the form owner can update the form
     if (form.organization.toString() !== userId) {
       return res.status(403).json({ error: "Unauthorized" });
     }
@@ -236,11 +242,11 @@ const updateForm = async (req, res) => {
       data: updatedForm,
     });
   } catch (error) {
-    console.error("Update form error:", error);
     res.status(500).json({ error: "Failed to update form" });
   }
 };
 
+//funtion to delete a form
 const deleteForm = async (req, res) => {
   const { userId } = req.user;
   const { formId } = req.params;
@@ -264,7 +270,6 @@ const deleteForm = async (req, res) => {
       message: "Form deleted successfully",
     });
   } catch (error) {
-    console.error("Delete form error:", error);
     res.status(500).json({ error: "Failed to delete form" });
   }
 };
