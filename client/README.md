@@ -1,47 +1,75 @@
-# Feedback Management System
+# InsightX
 
-A simple feedback management system utilizing Net Promoter Score (NPS) to collect, analyze, and visualize user feedback for organizations.
+A feedback collection platform that helps organizations gather customer insights and measure Net Promoter Score (NPS). Build forms, share them with customers, and get actionable analytics in real-time.
 
-## Demo Links
+## Live Demo
 
-- **Live App:** [InsightX](https://insightx.vercel.app)
-- **API Docs:** [Documentation](https://documenter.getpostman.com/view/36998674/2sAXxV5pbd)
+- **App:** [https://insightx.vercel.app](https://insightx.vercel.app)
+- **API Docs:** [Postman Documentation](https://documenter.getpostman.com/view/36998674/2sAXxV5pbd)
 
 ## Features
 
-- NPS-based feedback collection
-- Visual analytics dashboard
-- Easy API integration
-- Real-time reporting
+- Create custom feedback forms with multiple question types
+- Real-time NPS calculation and analytics
+- Beautiful dashboards with interactive charts
+- Export responses as CSV
+- REST API for programmatic access
+- Secure user authentication with email verification
+- Fully responsive design
 
 ## Tech Stack
 
-- **Frontend:** React, Redux Toolkit, CSS
-- **Backend:** Node.js, Express.js
-- **Database:** MongoDB
-- **Hosting:**
-  - Frontend: Vercel
-  - Backend: Render
+**Frontend:** React, Redux Toolkit, Tailwind CSS, Recharts
 
-## Quick Start
+**Backend:** Node.js, Express.js, MongoDB
 
-1. Clone the repo:
+**Hosting:** Vercel (frontend), Render (backend)
 
-```bash
+## Getting Started
+
+### Clone the Repository
+
+```
 git clone https://github.com/luchiiii/InsightX.git
-```
-
-2. Install dependencies:
-
-```bash
 cd InsightX
-npm install
 ```
 
-3. Start the app:
+### Frontend Setup
 
-```bash
+```
+cd client
+npm install
 npm start
 ```
 
-The application is deployed and accessible at [https://insightx.vercel.app](https://insightx.vercel.app)
+The app will run at `http://localhost:3000`
+
+### Backend Setup
+
+```
+cd server
+npm install
+npm start
+```
+
+The API will run at `http://localhost:3001`
+
+## How It Works
+
+1. Create a feedback form with custom questions
+2. Share the form link with your customers
+3. Collect responses in real-time
+4. View NPS analytics and insights
+5. Export data or integrate via API
+
+## API Integration
+
+Get your API token from the dashboard and use it to submit feedback programmatically. See the [full API documentation](./docs/API.md) for details.
+
+## GitHub
+
+[github.com/luchiiii](https://github.com/luchiiii)
+
+---
+
+Built with React, Node.js, and MongoDB
